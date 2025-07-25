@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Database</Text>
+      <Text style={styles.title}>Functions</Text>
     </View>
   );
 }
