@@ -19,7 +19,7 @@ import {
 import { getAuth } from 'firebase/auth';
 
 export default function ViewScreen() {
-  const [habits, setHabits] = useState<any[]>([]);
+  const [habits, setHabits] = useState([]);
   const [username, setUsername] = useState('');
   const auth = getAuth();
   const user = auth.currentUser;

@@ -7,8 +7,8 @@ import { getAuth } from 'firebase/auth';
 export default function CreateScreen() {
   const [name, setName] = useState('');
   const [frequency, setFrequency] = useState('');
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [todos, setTodos] = useState<any[]>([]);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [todos, setTodos] = useState([]);
   const auth = getAuth();
   const user = auth.currentUser;
   const habitCollection = collection(db, 'habits');
