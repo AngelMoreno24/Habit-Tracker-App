@@ -1,14 +1,14 @@
 import { StyleSheet, TextInput, FlatList, TouchableOpacity, Text, SafeAreaView, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { db } from '../../FirebaseConfig';
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 export default function CreateScreen() {
   const [name, setName] = useState('');
   const [frequency, setFrequency] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [todos, setTodos] = useState<any>([]);
+  const [todos, setTodos] = useState<any[]>([]);
   const auth = getAuth();
   const user = auth.currentUser;
   const habitCollection = collection(db, 'habits');
@@ -35,7 +35,7 @@ export default function CreateScreen() {
         frequency,
         days: frequency === 'weekly' ? selectedDays : [],
         userId: user.uid,
-        completionLog: [] // ✅ Initialize empty log
+        completionLog: [] // Initialize empty log
       });
 
       setName('');
@@ -67,6 +67,7 @@ export default function CreateScreen() {
             value={name}
             onChangeText={setName}
             style={styles.input}
+            placeholderTextColor="#6B7280"
           />
         </View>
 
@@ -127,9 +128,10 @@ export default function CreateScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.todoContainer}>
-              <Text>{item.name} ({item.frequency})</Text>
+              <Text style={styles.todoText}>{item.name} ({item.frequency})</Text>
             </View>
           )}
+          contentContainerStyle={{ paddingBottom: 40 }}
         />
       </View>
     </SafeAreaView>
@@ -139,49 +141,57 @@ export default function CreateScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: '#DCEEFB', // pastel blue background
   },
   container: {
     flex: 1,
     padding: 20,
+    alignItems: 'center', // center content horizontally
   },
   mainTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
+    color: '#5C6BC0', // pastel purple text
+    textAlign: 'center',
   },
   inputContainer: {
     marginBottom: 15,
+    width: '100%',
   },
   label: {
     marginBottom: 6,
     fontWeight: '600',
-    color: '#444',
+    color: '#4C51BF', // purple
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: '#A6C8FF', // pastel blue border
     borderWidth: 1,
     paddingHorizontal: 10,
     borderRadius: 6,
+    backgroundColor: '#F0F7FF',
+    color: '#1D3557',
   },
   chipGroup: {
     flexDirection: 'row',
   },
   chip: {
     paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: '#5C6BC0', // pastel purple border
     marginRight: 10,
+    backgroundColor: '#E0E7FF',
   },
   chipSelected: {
-    backgroundColor: '#FFA726',
-    borderColor: '#FFA726',
+    backgroundColor: '#5C6BC0',
+    borderColor: '#5C6BC0',
   },
   chipText: {
-    color: '#333',
+    color: '#5C6BC0',
+    fontWeight: '600',
   },
   chipTextSelected: {
     color: '#fff',
@@ -194,28 +204,31 @@ const styles = StyleSheet.create({
   dayChip: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#5C6BC0',
     paddingVertical: 6,
     paddingHorizontal: 12,
     margin: 4,
+    backgroundColor: '#E0E7FF',
   },
   dayChipSelected: {
     backgroundColor: '#5C6BC0',
     borderColor: '#5C6BC0',
   },
   dayChipText: {
-    color: '#333',
+    color: '#5C6BC0',
+    fontWeight: '600',
   },
   dayChipTextSelected: {
     color: '#fff',
     fontWeight: 'bold',
   },
   addButton: {
-    backgroundColor: '#FFA726',
+    backgroundColor: '#5C6BC0', // pastel purple
     padding: 12,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
+    width: '100%',
   },
   buttonText: {
     color: '#fff',
@@ -223,8 +236,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   todoContainer: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: '#A6C8FF',
+    width: '100%',
+  },
+  todoText: {
+    fontSize: 18,
+    color: '#1D3557',
   },
 });
