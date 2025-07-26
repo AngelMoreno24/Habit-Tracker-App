@@ -1,21 +1,7 @@
-import {
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  SafeAreaView,
-  View,
-} from 'react-native';
+import {StyleSheet, FlatList, TouchableOpacity, Text, SafeAreaView, View,} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { db } from '../../FirebaseConfig';
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  doc,
-  query,
-  where,
-} from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 export default function ViewScreen() {
@@ -74,6 +60,7 @@ export default function ViewScreen() {
     }
   };
 
+  //mark the habit as completed by adding todays date to the completion log
   const toggleCompletion = async (habit) => {
     const ref = doc(db, 'habits', habit.id);
     const log = habit.completionLog || [];
