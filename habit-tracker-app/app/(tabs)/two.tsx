@@ -5,19 +5,22 @@ import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where } 
 import { getAuth } from 'firebase/auth';
 
 export default function TabTwoScreen() {
-  const [task, setTask] = useState('');
+  const [name, setName] = useState('');
+  const [frequency, setFrequency] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [todos, setTodos] = useState<any>([]);
   const auth = getAuth();
   const user = auth.currentUser;
-  const todosCollection = collection(db, 'todos');
+  const habitCollection = collection(db, 'habits');
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   useEffect(() => {
-    fetchTodos();
+    fetchHabits();
   }, [user]);
 
-  const fetchTodos = async () => {
+  const fetchHabits = async () => {
     if (user) {
-      const q = query(todosCollection, where("userId", "==", user.uid));
+      const q = query(habitCollection, where("userId", "==", user.uid));
       const data = await getDocs(q);
       setTodos(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     } else {
@@ -26,56 +29,105 @@ export default function TabTwoScreen() {
   };
 
   const addTodo = async () => {
-    if (user) {
-      await addDoc(todosCollection, { task, completed: false, userId: user.uid });
-      setTask('');
-      fetchTodos();
+    if (user && name && frequency) {
+      await addDoc(habitCollection, {
+        name,
+        frequency,
+        days: frequency === 'weekly' ? selectedDays : [],
+        userId: user.uid
+      });
+      setName('');
+      setFrequency('');
+      setSelectedDays([]);
+      fetchHabits();
     } else {
-      console.log("No user logged in");
+      console.log("Incomplete form or no user");
     }
   };
 
-  const updateTodo = async (id: string, completed: any) => {
-    const todoDoc = doc(db, 'todos', id);
-    await updateDoc(todoDoc, { completed: !completed });
-    fetchTodos();
-  };
-
-  const deleteTodo = async (id: string) => {
-    const todoDoc = doc(db, 'todos', id);
-    await deleteDoc(todoDoc);
-    fetchTodos();
+  const toggleDay = (day: string) => {
+    if (selectedDays.includes(day)) {
+      setSelectedDays(selectedDays.filter(d => d !== day));
+    } else {
+      setSelectedDays([...selectedDays, day]);
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.mainTitle}>Todo List</Text>
+        <Text style={styles.mainTitle}>Add Habit</Text>
+
+        {/* Habit Name */}
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="New Task"
-            value={task}
-            onChangeText={(text) => setTask(text)}
+            placeholder="Habit name"
+            value={name}
+            onChangeText={setName}
             style={styles.input}
           />
-          <TouchableOpacity style={styles.addButton} onPress={addTodo}>
-            <Text style={styles.buttonText}>Add</Text>
-          </TouchableOpacity>
         </View>
+
+        {/* Frequency Chips */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Frequency</Text>
+          <View style={styles.chipGroup}>
+            <TouchableOpacity
+              onPress={() => {
+                setFrequency('daily');
+                setSelectedDays([]);
+              }}
+              style={[styles.chip, frequency === 'daily' && styles.chipSelected]}
+            >
+              <Text style={frequency === 'daily' ? styles.chipTextSelected : styles.chipText}>Daily</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setFrequency('weekly')}
+              style={[styles.chip, frequency === 'weekly' && styles.chipSelected]}
+            >
+              <Text style={frequency === 'weekly' ? styles.chipTextSelected : styles.chipText}>Weekly</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Day Picker (if weekly) */}
+        {frequency === 'weekly' && (
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Select Days</Text>
+            <View style={styles.dayGroup}>
+              {weekdays.map(day => (
+                <TouchableOpacity
+                  key={day}
+                  onPress={() => toggleDay(day)}
+                  style={[
+                    styles.dayChip,
+                    selectedDays.includes(day) && styles.dayChipSelected
+                  ]}
+                >
+                  <Text style={selectedDays.includes(day) ? styles.dayChipTextSelected : styles.dayChipText}>
+                    {day}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Add Button */}
+        <TouchableOpacity onPress={addTodo} style={styles.addButton}>
+          <Text style={styles.buttonText}>Add Habit</Text>
+        </TouchableOpacity>
+
+        {/* Habit List */}
         <FlatList
           data={todos}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.todoContainer}>
-              <Text style={{ textDecorationLine: item.completed ? 'line-through' : 'none', flex: 1 }}>{item.task}</Text>
-              <TouchableOpacity style={styles.button} onPress={() => updateTodo(item.id, item.completed)}>
-                <Text style={styles.buttonText}>{item.completed ? "Undo" : "Complete"}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => deleteTodo(item.id)}>
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
+              <Text>{item.name} ({item.frequency})</Text>
             </View>
           )}
-          keyExtractor={(item) => item.id}
         />
       </View>
     </SafeAreaView>
@@ -88,65 +140,89 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
   },
   mainTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10, // Adjust spacing as needed
-    color: '#333', // Choose a color that fits your app theme
+    marginBottom: 10,
+    color: '#333',
   },
   inputContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    marginBottom: 15,
+  },
+  label: {
+    marginBottom: 6,
+    fontWeight: '600',
+    color: '#444',
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    padding: 10,
-    flex: 1, // Adjusted to take available space
-    marginRight: 10, // Add margin to separate input and button
+    paddingHorizontal: 10,
+    borderRadius: 6,
+  },
+  chipGroup: {
+    flexDirection: 'row',
+  },
+  chip: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#aaa',
+    marginRight: 10,
+  },
+  chipSelected: {
+    backgroundColor: '#FFA726',
+    borderColor: '#FFA726',
+  },
+  chipText: {
+    color: '#333',
+  },
+  chipTextSelected: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  dayGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayChip: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    margin: 4,
+  },
+  dayChipSelected: {
+    backgroundColor: '#5C6BC0',
+    borderColor: '#5C6BC0',
+  },
+  dayChipText: {
+    color: '#333',
+  },
+  dayChipTextSelected: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   addButton: {
-    padding: 10,
-    borderRadius: 20,
+    backgroundColor: '#FFA726',
+    padding: 12,
+    borderRadius: 12,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFA726', // Use a distinct color for the add button
-    shadowColor: '#FFA726',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
-    elevation: 5,
+    marginTop: 10,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+    color: '#fff',
     fontWeight: '600',
+    fontSize: 16,
   },
   todoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 10,
-    width: '100%',
-  },
-  button: {
-    padding: 10,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#5C6BC0',
-    shadowColor: '#5C6BC0',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
-    elevation: 5,
-    marginLeft: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });
