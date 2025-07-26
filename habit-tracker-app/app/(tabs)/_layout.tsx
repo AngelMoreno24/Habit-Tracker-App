@@ -45,6 +45,7 @@ export default function TabLayout() {
               </Pressable>
             </Link>
           ),
+          headerShown: false 
         }}
       />
       <Tabs.Screen
@@ -52,6 +53,7 @@ export default function TabLayout() {
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false 
         }}
       />
       <Tabs.Screen
@@ -59,6 +61,7 @@ export default function TabLayout() {
         options={{
           title: 'Storage',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false 
         }}
       />
       <Tabs.Screen
@@ -66,6 +69,7 @@ export default function TabLayout() {
         options={{
           title: 'Functions',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false 
         }}
       />
     </Tabs>

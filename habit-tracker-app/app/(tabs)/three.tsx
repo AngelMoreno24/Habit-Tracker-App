@@ -37,7 +37,6 @@ export default function ViewScreen() {
 
   useEffect(() => {
     if (user) {
-      setUsername(user.displayName || user.email?.split('@')[0] || 'User');
       fetchTodayHabits();
     }
   }, [user]);
@@ -91,7 +90,7 @@ export default function ViewScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.greeting}>Welcome, {username}</Text>
+        <Text style={styles.greeting}>View Habits</Text>
         <Text style={styles.dateText}>Today: {formattedDate}</Text>
 
         <View style={styles.divider} />
