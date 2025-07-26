@@ -74,13 +74,13 @@ export default function ViewScreen() {
     }
   };
 
-  const toggleCompletion = async (habit: any) => {
+  const toggleCompletion = async (habit) => {
     const ref = doc(db, 'habits', habit.id);
     const log = habit.completionLog || [];
     const alreadyDone = log.includes(todayString);
 
     const newLog = alreadyDone
-      ? log.filter((d: string) => d !== todayString)
+      ? log.filter((d) => d !== todayString)
       : [...log, todayString];
 
     await updateDoc(ref, { completionLog: newLog });

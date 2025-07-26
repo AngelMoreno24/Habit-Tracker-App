@@ -47,7 +47,7 @@ export default function CreateScreen() {
     }
   };
 
-  const toggleDay = (day: string) => {
+  const toggleDay = (day) => {
     if (selectedDays.includes(day)) {
       setSelectedDays(selectedDays.filter(d => d !== day));
     } else {
