@@ -90,7 +90,7 @@ export default function ViewScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.greeting}>View Habits</Text>
+        <Text style={styles.header}>View Habits</Text>
         <Text style={styles.dateText}>Today: {formattedDate}</Text>
 
         <View style={styles.divider} />
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 16,
-    color: '#457B9D',
+    color: '#000000ff',
     marginBottom: 14,
     textAlign: 'center',
   },
@@ -190,6 +190,13 @@ const styles = StyleSheet.create({
   },
   undoneButton: {
     backgroundColor: '#74A3FF', // deeper blue
+  },
+  header: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#000',
+    textAlign: 'center',
   },
   buttonText: {
     fontSize: 16,

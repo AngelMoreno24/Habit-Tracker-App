@@ -24,7 +24,6 @@ export default function CalendarScreen() {
   const user = auth.currentUser;
   const habitCollection = collection(db, 'habits');
 
-  // Convert YYYY-MM-DD to weekday name
   const weekdayFromDate = (dateString) => {
     const [year, month, day] = dateString.split('-').map(Number);
     const date = new Date(year, month - 1, day);
@@ -35,7 +34,11 @@ export default function CalendarScreen() {
     if (!dateString) return '';
     const [year, month, day] = dateString.split('-').map(Number);
     const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
   };
 
   useEffect(() => {
@@ -55,10 +58,9 @@ export default function CalendarScreen() {
       allHabits.forEach(habit => {
         if (Array.isArray(habit.completionLog)) {
           habit.completionLog.forEach(dateString => {
-            // No time comparison needed since completionLog dates stored as strings YYYY-MM-DD
             completedDatesMap[dateString] = {
               marked: true,
-              dotColor: '#5C6BC0',  // pastel blue dot
+              dotColor: '#5C6BC0',
             };
           });
         }
@@ -78,10 +80,9 @@ export default function CalendarScreen() {
 
   const fetchHabitsByDate = async (date) => {
     try {
-      const dayAbbrev = weekdayFromDate(date).slice(0, 3); // e.g., "Mon"
-      const selected = date; // date is string "YYYY-MM-DD"
+      const dayAbbrev = weekdayFromDate(date).slice(0, 3);
+      const selected = date;
 
-      // Daily habits query
       const dailyQuery = query(
         habitCollection,
         where('userId', '==', user.uid),
@@ -90,7 +91,6 @@ export default function CalendarScreen() {
       const dailySnap = await getDocs(dailyQuery);
       const dailyHabits = dailySnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
-      // Weekly habits query
       const weeklyQuery = query(
         habitCollection,
         where('userId', '==', user.uid),
@@ -100,7 +100,6 @@ export default function CalendarScreen() {
       const weeklySnap = await getDocs(weeklyQuery);
       const weeklyHabits = weeklySnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
-      // Filter by createdAt and stoppedAt date strings
       const isWithinLifetime = (habit) => {
         const createdAtStr = habit.createdAt || null;
         const stoppedAtStr = habit.stoppedAt || null;
@@ -130,16 +129,17 @@ export default function CalendarScreen() {
               [selectedDate]: {
                 ...(markedDates[selectedDate] || {}),
                 selected: true,
-                selectedColor: '#5C6BC0',
+                selectedColor: '#74A3FF',
               },
             }),
           }}
           theme={{
-            selectedDayBackgroundColor: '#5C6BC0',
+            selectedDayBackgroundColor: '#74A3FF',
             todayTextColor: '#FFA726',
-            arrowColor: '#5C6BC0',
-            monthTextColor: '#5C6BC0',
+            arrowColor: '#74A3FF',
+            monthTextColor: '#2a3a99',
             textDayFontWeight: 'bold',
+            textSectionTitleColor: '#2a3a99',
           }}
         />
 
@@ -174,25 +174,26 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f0f3ff', // pastel blue background
+    backgroundColor: '#DCEEFB',
   },
   container: {
     flex: 1,
     padding: 20,
   },
   header: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 20,
-    color: '#5C6BC0',
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#000',
     textAlign: 'center',
   },
   selectedDateText: {
     marginTop: 16,
     fontSize: 18,
-    color: '#333',
+    color: '#000',
     textAlign: 'center',
     marginBottom: 12,
+    fontWeight: '600',
   },
   noHabitsText: {
     textAlign: 'center',
@@ -201,15 +202,15 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   card: {
-    backgroundColor: '#dde6fd', // lighter pastel blue
+    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    shadowColor: '#5C6BC0',
+    shadowColor: '#A6C8FF',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   habitName: {
     fontSize: 20,
