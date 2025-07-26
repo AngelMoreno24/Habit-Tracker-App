@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 
-export default function TabTwoScreen() {
+export default function CalenderView() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Functions</Text>
