@@ -12,7 +12,7 @@ import {
   collection,
   getDocs,
   query,
-  where,
+  where
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
@@ -24,14 +24,13 @@ export default function CalendarScreen() {
   const user = auth.currentUser;
   const habitCollection = collection(db, 'habits');
 
-  // Convert YYYY-MM-DD to weekday name, accounting for local timezone
+  // Convert YYYY-MM-DD to weekday name
   const weekdayFromDate = (dateString) => {
     const [year, month, day] = dateString.split('-').map(Number);
     const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', { weekday: 'long' });
   };
 
-  // Format date nicely like "July 26, 2025"
   const formattedDate = (dateString) => {
     if (!dateString) return '';
     const [year, month, day] = dateString.split('-').map(Number);
@@ -39,7 +38,6 @@ export default function CalendarScreen() {
     return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   };
 
-  // Fetch all habits for user to build markedDates dots
   useEffect(() => {
     if (user) {
       fetchCompletedHabitDates();
@@ -56,8 +54,9 @@ export default function CalendarScreen() {
 
       allHabits.forEach(habit => {
         if (Array.isArray(habit.completionLog)) {
-          habit.completionLog.forEach(date => {
-            completedDatesMap[date] = {
+          habit.completionLog.forEach(dateString => {
+            // No time comparison needed since completionLog dates stored as strings YYYY-MM-DD
+            completedDatesMap[dateString] = {
               marked: true,
               dotColor: '#5C6BC0',  // pastel blue dot
             };
@@ -71,7 +70,6 @@ export default function CalendarScreen() {
     }
   };
 
-  // Fetch habits for the selected date (daily + weekly)
   useEffect(() => {
     if (user && selectedDate) {
       fetchHabitsByDate(selectedDate);
@@ -80,9 +78,10 @@ export default function CalendarScreen() {
 
   const fetchHabitsByDate = async (date) => {
     try {
-      const dayAbbrev = weekdayFromDate(date).slice(0, 3); // eg "Mon"
+      const dayAbbrev = weekdayFromDate(date).slice(0, 3); // e.g., "Mon"
+      const selected = date; // date is string "YYYY-MM-DD"
 
-      // Daily habits always included
+      // Daily habits query
       const dailyQuery = query(
         habitCollection,
         where('userId', '==', user.uid),
@@ -91,7 +90,7 @@ export default function CalendarScreen() {
       const dailySnap = await getDocs(dailyQuery);
       const dailyHabits = dailySnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
-      // Weekly habits where 'days' array contains the day abbreviation (Mon, Tue, etc)
+      // Weekly habits query
       const weeklyQuery = query(
         habitCollection,
         where('userId', '==', user.uid),
@@ -101,7 +100,19 @@ export default function CalendarScreen() {
       const weeklySnap = await getDocs(weeklyQuery);
       const weeklyHabits = weeklySnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
-      setHabits([...dailyHabits, ...weeklyHabits]);
+      // Filter by createdAt and stoppedAt date strings
+      const isWithinLifetime = (habit) => {
+        const createdAtStr = habit.createdAt || null;
+        const stoppedAtStr = habit.stoppedAt || null;
+        const afterCreated = !createdAtStr || selected >= createdAtStr;
+        const beforeStopped = !stoppedAtStr || selected <= stoppedAtStr;
+        return afterCreated && beforeStopped;
+      };
+
+      const filteredDaily = dailyHabits.filter(isWithinLifetime);
+      const filteredWeekly = weeklyHabits.filter(isWithinLifetime);
+
+      setHabits([...filteredDaily, ...filteredWeekly]);
     } catch (error) {
       console.error('Error fetching habits by date:', error);
     }
@@ -113,7 +124,16 @@ export default function CalendarScreen() {
         <Text style={styles.header}>Select a Date</Text>
         <Calendar
           onDayPress={day => setSelectedDate(day.dateString)}
-          markedDates={markedDates}
+          markedDates={{
+            ...markedDates,
+            ...(selectedDate && {
+              [selectedDate]: {
+                ...(markedDates[selectedDate] || {}),
+                selected: true,
+                selectedColor: '#5C6BC0',
+              },
+            }),
+          }}
           theme={{
             selectedDayBackgroundColor: '#5C6BC0',
             todayTextColor: '#FFA726',
@@ -125,7 +145,7 @@ export default function CalendarScreen() {
 
         <Text style={styles.selectedDateText}>
           {selectedDate
-            ? `Habits for ${selectedDate} (${weekdayFromDate(selectedDate)})`
+            ? `Habits for ${formattedDate(selectedDate)} (${weekdayFromDate(selectedDate)})`
             : 'No date selected'}
         </Text>
 

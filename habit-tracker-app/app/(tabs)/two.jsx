@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, FlatList, TouchableOpacity, Text, SafeAreaView, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { db } from '../../FirebaseConfig';
-import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 export default function CreateScreen() {
@@ -30,14 +30,17 @@ export default function CreateScreen() {
 
   const addTodo = async () => {
     if (user && name && frequency) {
+      const today = new Date();
+      const createdAtDateString = today.toISOString().split('T')[0]; // e.g. "2025-07-26"
+
       await addDoc(habitCollection, {
         name,
         frequency,
         days: frequency === 'weekly' ? selectedDays : [],
         userId: user.uid,
         completionLog: [],
-        createdAt: serverTimestamp(),  // sets to current server time
-        stoppedAt: [], 
+        createdAt: createdAtDateString,  // store only date string
+        stoppedAt: null,                 // null means active
       });
 
       setName('');
@@ -62,7 +65,6 @@ export default function CreateScreen() {
       <View style={styles.container}>
         <Text style={styles.mainTitle}>Add Habit</Text>
 
-        {/* Habit Name */}
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Habit name"
@@ -73,7 +75,6 @@ export default function CreateScreen() {
           />
         </View>
 
-        {/* Frequency Chips */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Frequency</Text>
           <View style={styles.chipGroup}>
@@ -96,7 +97,6 @@ export default function CreateScreen() {
           </View>
         </View>
 
-        {/* Day Picker (if weekly) */}
         {frequency === 'weekly' && (
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Select Days</Text>
@@ -119,12 +119,10 @@ export default function CreateScreen() {
           </View>
         )}
 
-        {/* Add Button */}
         <TouchableOpacity onPress={addTodo} style={styles.addButton}>
           <Text style={styles.buttonText}>Add Habit</Text>
         </TouchableOpacity>
 
-        {/* Habit List */}
         <FlatList
           data={todos}
           keyExtractor={(item) => item.id}
@@ -148,7 +146,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    alignItems: 'center', // center content horizontally
+    alignItems: 'center',
   },
   mainTitle: {
     fontSize: 28,
@@ -164,11 +162,11 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
     fontWeight: '600',
-    color: '#4C51BF', // purple
+    color: '#4C51BF',
   },
   input: {
     height: 40,
-    borderColor: '#A6C8FF', // pastel blue border
+    borderColor: '#A6C8FF',
     borderWidth: 1,
     paddingHorizontal: 10,
     borderRadius: 6,
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#5C6BC0', // pastel purple border
+    borderColor: '#5C6BC0',
     marginRight: 10,
     backgroundColor: '#E0E7FF',
   },
@@ -225,7 +223,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   addButton: {
-    backgroundColor: '#5C6BC0', // pastel purple
+    backgroundColor: '#5C6BC0',
     padding: 12,
     borderRadius: 12,
     alignItems: 'center',
