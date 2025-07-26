@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, FlatList, TouchableOpacity, Text, SafeAreaView, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { db } from '../../FirebaseConfig';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 export default function CreateScreen() {
@@ -35,7 +35,9 @@ export default function CreateScreen() {
         frequency,
         days: frequency === 'weekly' ? selectedDays : [],
         userId: user.uid,
-        completionLog: [] // Initialize empty log
+        completionLog: [],
+        createdAt: serverTimestamp(),  // sets to current server time
+        stoppedAt: [], 
       });
 
       setName('');
