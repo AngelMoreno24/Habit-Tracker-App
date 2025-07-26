@@ -4,7 +4,7 @@ import { db } from '../../FirebaseConfig';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-export default function TabTwoScreen() {
+export default function CreateScreen() {
   const [name, setName] = useState('');
   const [frequency, setFrequency] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -34,8 +34,10 @@ export default function TabTwoScreen() {
         name,
         frequency,
         days: frequency === 'weekly' ? selectedDays : [],
-        userId: user.uid
+        userId: user.uid,
+        completionLog: [] // ✅ Initialize empty log
       });
+
       setName('');
       setFrequency('');
       setSelectedDays([]);
