@@ -114,7 +114,7 @@ export default function ViewScreen() {
               </View>
             );
           }}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 10 }}
         />
       </View>
     </SafeAreaView>
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
-    alignItems: 'center', // center horizontally
+    paddingTop: 20,
+    paddingHorizontal: 16,
   },
   greeting: {
     fontSize: 22,
@@ -145,51 +145,51 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   divider: {
-    width: '90%',
+    width: '100%',
     borderBottomWidth: 1,
     borderBottomColor: '#A6C8FF',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   habitRow: {
     flexDirection: 'row',
-    justifyContent: 'center', // center row contents horizontally
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 14,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     marginVertical: 8,
-    minWidth: '85%', // minimum width for card
+    width: '100%',
     shadowColor: '#A6C8FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 2,
   },
   habitText: {
     fontSize: 18,
     color: '#1D3557',
-    flexShrink: 1, // allow wrapping if too long
-    minWidth: '60%', // minimum width so text and button have space
+    flex: 1,
+    marginRight: 10,
+    textAlign: 'center',
   },
   habitTextDone: {
     textDecorationLine: 'line-through',
     color: '#6C7B8B',
+    textAlign: 'center',
   },
   toggleButton: {
-    minWidth: 90, // minimum width so button is comfortable size
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 20,
-    marginLeft: 24, // space between text and button
     alignItems: 'center',
     justifyContent: 'center',
   },
   doneButton: {
-    backgroundColor: '#A6C8FF', // pastel blue button
+    backgroundColor: '#A6C8FF', // pastel blue
   },
   undoneButton: {
-    backgroundColor: '#74A3FF', // deeper blue button
+    backgroundColor: '#74A3FF', // deeper blue
   },
   buttonText: {
     fontSize: 16,
