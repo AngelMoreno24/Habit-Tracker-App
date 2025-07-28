@@ -3,8 +3,8 @@ this is a habit tracking app created with react native and firebase
 
 Tech Stack:
 
--react-native
--firebase
+*react-native
+*firebase
 
 
 images:
