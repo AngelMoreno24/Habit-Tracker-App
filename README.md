@@ -26,7 +26,7 @@ View Habit tab: allows the user to see habits set for the current day and allows
 
 Calendar tab: provides a calendar view of habits with date selection
 
-<img width="377" height="845" alt="image" src="https://github.com/user-attachments/assets/2d7de2d0-68cc-4aef-8b36-2f7a914e1301" />
+<img width="377" height="847" alt="image" src="https://github.com/user-attachments/assets/523e2ef4-8e80-4191-a94a-76b85ad68045" />
 
 <img width="377" height="845" alt="image" src="https://github.com/user-attachments/assets/963cf78f-d134-49ef-866a-a92c25dcd526" />
 
