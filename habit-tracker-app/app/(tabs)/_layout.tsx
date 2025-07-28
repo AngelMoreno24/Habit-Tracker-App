@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'Create Habits',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -49,17 +49,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: false 
-        }}
-      />
-      <Tabs.Screen
         name="three"
         options={{
-          title: 'Storage',
+          title: 'View Habits',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerShown: false 
         }}
@@ -67,7 +59,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="four"
         options={{
-          title: 'Functions',
+          title: 'Calendar',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerShown: false 
         }}

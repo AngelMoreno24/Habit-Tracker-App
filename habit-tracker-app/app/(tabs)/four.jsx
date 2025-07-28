@@ -215,12 +215,12 @@ const styles = StyleSheet.create({
   habitName: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#2a3a99',
+    color: '#000000ff',
     marginBottom: 6,
   },
   habitFrequency: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#5C6BC0',
+    color: '#74A3FF',
   },
 });
